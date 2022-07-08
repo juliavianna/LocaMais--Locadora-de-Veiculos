@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <locale.h>
+
 int main()
 {
         int opcao = 7;
@@ -9,30 +10,31 @@ int main()
     while (opcao != 0) {
 
         system("cls");
-        printf("****LocaMAIS****");
-        printf("\nDigite sua opção : \n");
+        printf("****LocaMAIS - Veiculos****");
+        printf("\nDigite sua opcao : \n");
         printf("\n1 - Cadastrar Cliente");
         printf("\n2 - Cadastrar Veiculo");
         printf("\n3 - Locacao");
-        printf("\n4 - Dar Baixa na Locacao");
-        printf("\n5 - Pesquisar");
-        printf("\n6 - Pesquisar Locacoes de um Cliente");
-        printf("\n7 - Calcular quantos pontos um cliente possui");
+        printf("\n4 - Listar Clientes");
+        printf("\n5 - Listar Veiculos");
+        printf("\n6 - Listar Locacoes");
+        printf("\n7 - Pesquisar Cliente/Veiculo");
+
+
 
 
         printf("\n0 - fim\n");
         scanf("%d",&opcao);
         if (opcao == 1) CadastrarCliente();
         if (opcao == 2) CadastrarVeiculo();
-        if (opcao == 3) Locacao();
-        if (opcao == 4) darBaixa();
-        if (opcao == 5) pesquisar();
-        if (opcao == 6) locacoesCliente();
-        if (opcao == 7) calcularPontos();
+        if (opcao == 3) locacao();
+        if (opcao == 4) listarClientes();
+        if (opcao == 5) listarVeiculos();
+        if (opcao == 6) listarLocacao();
+        if (opcao == 7) pesquisarCliente();
 
 
-
-        if (opcao == 9) {
+        if (opcao == 6) {
 //            if (t == 0) { t = 1; strcpy(s,"on");}
 //            else { t = 0; strcpy(s,"off");}
         } else { printf("\n\n"); system("pause"); }
@@ -41,45 +43,56 @@ int main()
 }
 int CadastrarCliente (int cliente)
 {
+    FILE *pArqCliente;
+    pArqCliente = fopen("clienteAperfeicoado.txt","a");
 
-    char nome, endereco, telefone, codigoCliente, cpf, resposta;
+    char nome[30], endereco[30], telefone[15], codigoCliente[15], cpf[15], resp[1];
     cpf==codigoCliente;
     srand(time(NULL));
-    cad:
-
+    int resposta;
     printf("\n--CADASTRO DE CLIENTES--\n");
 
-    printf("\Informe o CPF");
-    scanf("%d", &codigoCliente);   //o cpf é o codigo da pessoa
+    repeat:
+    printf("nao use espacos, para separar palavras use - ou _\n");
+    printf("\Informe o CPF: ");
+    scanf("%s", &codigoCliente);   //o cpf é o codigo da pessoa
     printf("\nNome: ");
     scanf("%s", &nome);
     printf("\nEndereco: ");
     scanf("%s", &endereco);
     printf("\nTelefone: ");
     scanf("%s", &telefone);
-    //função pra incluir registro na tabela
-    printf("\n\nCADASTRO DO CLIENTE REALIZADO");
 
-    printf("\ndigite 1 para cadastrar outro cliente \n");
+           fprintf(pArqCliente, " cliente %s %s %s %s\n", codigoCliente, nome, endereco, telefone);
+
+    printf("\n\nCADASTRO DO CLIENTE REALIZADO COM SUCESSO!");
+
+    printf("\nDigite 1 para cadastrar outro cliente \n");
     scanf("%d", &resposta);
     if(resposta==1){
-        goto cad;
+        goto repeat;
     }
-
+    else{
+        printf("fim.");
+    }
+    fclose(pArqCliente);
 }
 
-int CadastrarVeiculo (int veiculo){
+int CadastrarVeiculo (int veiculo)
+{
+    FILE *pArqVeiculo;
+    pArqVeiculo = fopen("veiculoAperfeicoado.txt","a");
 
     int ocupantes;
     float diaria;
-    char modelo, cor, codigoVeiculo, resposta;
-    char placa;
+    char modelo[20], cor[15], codigoVeiculo[15], placa[20];
+    int resposta;
 
     placa==codigoVeiculo;
     srand(time(NULL));
     cad:
     printf("\n--CADASTRO DE VEICULOS--\n");
-
+    printf("nao use espacos, para separar palavras use - ou _\n");
     printf("\nModelo: ");
     scanf("%s", &modelo);
     printf("\nPlaca: ");
@@ -91,99 +104,107 @@ int CadastrarVeiculo (int veiculo){
     printf("valor da diaria: ");
     scanf("%f", &diaria);
 
+            fprintf(pArqVeiculo, " veiculo codigo:%s modelo:%s cor:%s ocupantes:%d diaria: RS%.2f\n", codigoVeiculo, modelo, cor, ocupantes, diaria );
+            fputc('\n', pArqVeiculo);
+
     printf("\nCADASTRO REALIZADO\n");
-    printf("%.2f", diaria);
+
     printf("\ndigite 1 para cadastrar outro veiculo \n");
     scanf("%d", &resposta);
     if(resposta==1){
         goto cad;
     }
+    else
+        printf("fim.");
+    fclose(pArqVeiculo);
+}
+int listarClientes (int codigoCliente){
+        FILE *pArqCliente;
+        pArqCliente = fopen("clienteAperfeicoado.txt","r");
+        char tudo[70];
+        printf("**Clientes**\n");
+        while(fgets(tudo,70,pArqCliente)!=NULL)
+            printf("%s", tudo);
+
+        fclose(pArqCliente);
 }
 
-int Locacao (int locacao){
+int listarVeiculos (int codigoVeiculo){
+        FILE *pArqVeiculo;
+        pArqVeiculo = fopen("veiculoAperfeicoado.txt","r");
+        char tudo[70];
+        printf("**Veiculos**\n");
+        while(fgets(tudo,70,pArqVeiculo)!=NULL)
+            printf("%s", tudo);
 
-    int codigoCliente, ocupantes, diasdeLocacao, valorTotal, resposta;
-    char diaRetirada, diaDevolucao;
-    printf("\n--CADASTRO DA LOCACAO--\n");
+        fclose(pArqVeiculo);
+}
+
+int locacao (int codigoVeiculo, int codigoCliente)
+{
+    FILE *pArqLocacao;
+    pArqLocacao = fopen("locacaoAperfeicoado.txt","a");
+
+    char codigoC[20], codigoV[20],dataRetirada[10],dataDevolucao[10];
+    int diaria, total, dias;
+
+    printf("**LOCACAO**\n");
+
+    printf("digite o codigo do cliente: ");
+    scanf("%s", &codigoC);
+    printf("digite o codigo do veiculo: ");
+    scanf("%s", &codigoV);
+    printf("quantidade de dias: ");
+    scanf("%d", &dias);
+    printf("Data da retirada: ");
+    scanf("%s", &dataRetirada);
+    printf("Data da devolucao: ");
+    scanf("%s", &dataDevolucao);
+    printf("Valor da diaria do veiculo:");
+    scanf("%d", &diaria);
+    total= diaria*dias;
+    printf("total: %d", total);
+        fprintf(pArqLocacao, "Cliente:%s Veiculo:%s ¨Dias:%d Retirada:%s Devolucao:%s total:%d\n",codigoC, codigoV, dias, dataRetirada, dataDevolucao );
+        fputc('\n', pArqLocacao);
+    fclose(pArqLocacao);
+}
+
+int listarLocacao (int codigoVeiculo)
+{
+        FILE *pArqLocacao;
+        pArqLocacao = fopen("locacaoAperfeicoado.txt","r");
+        char tudo[70];
+        printf("**Locacoes**\n");
+        while(fgets(tudo,70,pArqLocacao)!=NULL)
+            printf("%s", tudo);
+
+        fclose(pArqLocacao);
+}
+
+int pesquisarCliente()
+{//pesquisar por cliente, por veiculo, listar todos os clientes e listar todos os veiculos
+    FILE *pArqCliente;
+    pArqCliente = fopen("clienteAperfeicoado.txt","rt");//rt pq é so pra ler
+    if(pArqCliente == NULL)
+       printf("Erro, nao foi possivel abrir o arquivo\n");
+    char codigo[11] = {};
+    char nome[30] = {};
+    char endereco[30] = {};
+    char telefone[10] = {};;
+    char codigopes[11] = {};
 
     cad:
     printf("digite o codigo do cliente: ");
-    scanf("%d", &codigoCliente);
-    /*fazer um if pra se o codigo do cliente nao existir
-    printf("o cliente nao foi encontrado no sistema, digite novamente")
-    goto cad;
-    */
-    printf("digite por quantos dias o carro sera alugado: ");
-    scanf("%d", &diasdeLocacao);
-    printf("Dia da retirada do veiculo: ");
-    scanf("%s", &diaRetirada);
-    printf("Dia da devolucao do veiculo: ");
-    scanf("%s", &diaDevolucao);
-    printf("Quantidade de ocupantes necesarios: ");
-    scanf("%d", &ocupantes);
-
-//    valorTotal= cadastroLocacao(valordaLocacao);
-
-    printf("\nDigite 1 se deseja contratar um seguro para o carro\n");
-    scanf("%d", &resposta);
-    if(resposta==1)
-        valorTotal=valorTotal+50;
-
-    printf("CADASTRO REALIZADO\n valor total: RS%d", valorTotal);
-}
-
-void cadastroLocacao(float diaria)
-{
-    int diasdeLocacao, valordaLocacao;
-
-    valordaLocacao = diasdeLocacao * diaria;
-    return valordaLocacao;
-}
-
-int darBaixa(int valorTotal)//mostrar valor a ser pago(e se tiver multa calcular), mudar o status do veiculo(de alugado p disponivel)
-{
-    char diaDevolucao;
-    int dataEntrega, diferenca, multa, valortotal;
-
-    printf("--DAR BAIXA EM UM VEICULO--");
-
-    printf("insira a data em que o veiculo foi entregue");
-    if(dataEntrega=!diaDevolucao);
-        diferenca= dataEntrega-diaDevolucao;
-        multa= valorTotal*0,05;// multa sozinha
-        multa= valorTotal+multa;//multa aplicada no valor antes da multa
-        multa= multa+(diferenca*30);//multa mais a taxa de atrasos por dia
-
-}
-
-int pesquisar(int codigoCliente, int codigoVeiculo)
-{
-
-}
-int locacoesCliente (int codigoCliente)
-{
-    int codigo;
-    printf("--PESQUISAR LOCACOES DE UM CLIENTE--");
-    cod:
-    printf("\nCodigo do cliente: ");
-    scanf("%d", &codigo);
-    if(codigo!=codigoCliente){
-        //tem q varrer o banco de dados e procurar se esse codigo digitado existe, se nao existir
-        printf("Esse cliente nao existe, digite o codigo novamente");
-        goto cod;
+    scanf(" %s", codigopes);
+    while(fscanf(pArqCliente, "%s %s %s %s", codigo, nome, endereco, telefone) != EOF){
+       if(atoi(codigo) == atoi(codigopes)){
+          printf("\nLinha:  %s %s %s %s", codigo, nome, endereco, telefone);
+          break;
+        }
     }
-}
-
-
-int calcularPontos (int diasdeLocacao )
-{
-    int pontos, totalPontos;
-
-    pontos= diasdeLocacao * 10;
-    totalPontos= pontos+totalPontos;
-    if (totalPontos>=500)
-        printf("este cliente possui mais de 500 pontos e por isso esta elegivel para ganhar o kit LocaMais");
-    else
-        printf("o cliente possui %d pontos", totalPontos);
+    if(atoi(codigo) != atoi(codigopes)){
+         printf("O codigo digitado nao corresponde a nenhum cliente.\n");
+    }
+    fclose(pArqCliente);
 }
 
