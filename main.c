@@ -54,7 +54,7 @@ int CadastrarCliente (int cliente)
 
     repeat:
     printf("nao use espacos, para separar palavras use - ou _\n");
-    printf("\Informe o CPF: ");
+    printf("\nInforme o CPF: ");
     scanf("%s", &codigoCliente);   //o cpf é o codigo da pessoa
     printf("\nNome: ");
     scanf("%s", &nome);
